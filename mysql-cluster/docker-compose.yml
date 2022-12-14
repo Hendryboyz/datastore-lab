@@ -1,0 +1,59 @@
+version: '3.1'
+
+services:
+  master-db:
+    image: mysql:8.0.31-debian
+    container_name: mysql-master
+    command:
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_general_ci
+    restart: always
+    env_file:
+      - ./master/.env
+    ports:
+      - 33061:3306
+    volumes:
+      - ./master/data:/var/lib/mysql
+      - ./master/mysql.conf:/etc/mysql/conf.d/mysql.conf.cnf
+    networks:
+      - overlay
+  
+  slave-db-1:
+    image: mysql:8.0.31-debian
+    container_name: mysql-replica-1
+    command:
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_general_ci
+    restart: always
+    env_file:
+      - ./replicas/.env
+    ports:
+      - 33062:3306
+    volumes:
+      - ./replicas/a/data:/var/lib/mysql
+      - ./replicas/a/mysql.conf:/etc/mysql/conf.d/mysql.conf.cnf
+    networks:
+      - overlay
+  
+  slave-db-2:
+    image: mysql:8.0.31-debian
+    container_name: mysql-replica-2
+    command:
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_general_ci
+    restart: always
+    env_file:
+      - ./replicas/.env
+    ports:
+      - 33063:3306
+    volumes:
+      - ./replicas/b/data:/var/lib/mysql
+      - ./replicas/b/mysql.conf:/etc/mysql/conf.d/mysql.conf.cnf
+    networks:
+      - overlay
+
+networks:
+  overlay: {}
